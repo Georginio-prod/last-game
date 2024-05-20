@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import * as z from "zod";
 import { Heading } from "@/components/ui/heading";
-import { Store } from "@prisma/client";
+import { Billboard, Store } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { FileDiff, Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -16,20 +16,21 @@ import axios from 'axios';
 import { AlertModal } from '@/components/modals/alert.modal';
 import { ApiAlert } from '@/components/ui/api-alert';
 import { useOrigin } from '@/hooks/use-origin';
+import ImageUpload from '@/components/ui/image-upload';
 
-
-
-interface SettingsFormProps {
-    initialData: Store;
-}
 
 const formSchema = z.object({
-    name: z.string().min(1)
+    label: z.string().min(1),
+    imageUrl: z.string().min(1)
 });
 
-type SettingsFormValues = z.infer<typeof formSchema>;
+type BillboardFormValues = z.infer<typeof formSchema>;
 
-export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
+interface BillboardFormProps {
+    initialData: Billboard | null;
+}
+
+export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
 
     const params = useParams();
     const router = useRouter();
@@ -39,12 +40,20 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
     const [open , setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { handleSubmit, register, formState: { errors } } = useForm<SettingsFormValues>({
+    const title = initialData ? "Modifier" : "Créer"
+    const description = initialData ? "Modifier" : "Ajouter"
+    const toastMessage = initialData ? "Mettre à jour" : "Créer"
+    const action = initialData ? "Enrégistrer" : "Créer"
+
+    const { handleSubmit, register, formState: { errors } } = useForm<BillboardFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData
+        defaultValues: initialData || {
+            label: '',
+            imageUrl: ''
+        }
     });
 
-    const onSubmit: SubmitHandler<SettingsFormValues> = async (data) => {
+    const onSubmit: SubmitHandler<BillboardFormValues> = async (data) => {
         try {
             console.log(data);
             setLoading(true);
@@ -87,32 +96,53 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
 
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Paramètres"
-                    description="Gérer les préférences de la boutique"
+                    title={title}
+                    description={description}
                 />
-                <Button
+                {initialData && (
+                    <Button
                     disabled={loading}
                     variant="destructive"
                     size="icon"
                     onClick={() => setOpen(true)}
-                >
+                    >
                     <Trash className="h-4 w-4"/>
-                </Button>
+                    </Button>
+                )}
+               
             </div>
             <Separator/>
           
             <form onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Image de fond</label>
                 <input
                     id="name"
-                    {...register("name")}
-                    placeholder="Nom de la boutique"
+                    {...register("label")}
+                    placeholder="Etiquette d'affichage"
+                    type="text"
+                    className="mt-1 p-2 border border-gray-300 rounded-md "
+                       
+                />
+
+                
+               
+               
+                <div className='grid grid-cols-1 gap-8'>
+                    {/* Ajoutez d'autres champs de formulaire ici si nécessaire */}
+                   
+                </div>
+
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Etiquette</label>
+                <input
+                    id="name"
+                    {...register("label")}
+                    placeholder="Etiquette d'affichage"
                     type="text"
                     className="mt-1 p-2 border border-gray-300 rounded-md "
                        
                 />
                 <div className="flex flex-col">
-                {errors.name && <span className="text-red-500 justify-center">{errors.name.message}</span>}
+                {errors.label && <span className="text-red-500 justify-center">{errors.label.message}</span>}
                 </div>
                
                
@@ -121,19 +151,15 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                    
                 </div>
                 <Button disabled={loading} className=" m-6 ml-auto" type="submit" >
-                    Save
+                    {action}
                 </Button>
             </form>
 
            <Separator/>
-           <ApiAlert 
-                title="NEXT_PUBLIC_API_URL"
-                description={`${origin}/api/${params.storeId}`}
-                variant='public' 
-            />
+           
           
         </>
     );
 };
 
-export default SettingsForm;
+export default BillboardForm;
