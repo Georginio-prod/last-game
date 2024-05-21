@@ -80,7 +80,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
             setLoading(true);
             await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`);
             router.refresh();
-            router.push("/");
+            router.push(`/${params.storeId}/billboards`);
             toast.success("Expositon supprimée.");
         } catch (error) {
             toast.error("Assurez-vous d'abord d'avoir supprimé toutes les catégories utilisant ces panneaux d'affichage..");
