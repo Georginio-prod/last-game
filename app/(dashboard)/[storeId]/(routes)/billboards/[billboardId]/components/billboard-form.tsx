@@ -3,21 +3,17 @@
 import React, { useState } from 'react';
 import * as z from "zod";
 import { Heading } from "@/components/ui/heading";
-import { Billboard, Store } from "@prisma/client";
+import { Billboard } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import { FileDiff, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { FormField, Form, FormMessage } from '@/components/ui/form';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { AlertModal } from '@/components/modals/alert.modal';
-import { ApiAlert } from '@/components/ui/api-alert';
-import { useOrigin } from '@/hooks/use-origin';
 import ImageUpload from '@/components/ui/image-upload';
-
 
 const formSchema = z.object({
     label: z.string().min(1),
@@ -31,21 +27,18 @@ interface BillboardFormProps {
 }
 
 export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
-
     const params = useParams();
     const router = useRouter();
-    const origin = useOrigin();
-
-
-    const [open , setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [images, setImages] = useState<string[]>(initialData ? [initialData.imageUrl] : []);
 
-    const title = initialData ? "Modifier" : "Créer"
-    const description = initialData ? "Modifier" : "Ajouter"
-    const toastMessage = initialData ? "Mettre à jour" : "Créer"
-    const action = initialData ? "Enrégistrer" : "Créer"
+    const title = initialData ? "Modifier" : "Créer";
+    const description = initialData ? "Modifier l'affichage" : "Ajouter un nouvel affichage";
+    const toastMessage = initialData ? "Mise à jour réussie" : "Création réussie";
+    const action = initialData ? "Enregistrer" : "Créer";
 
-    const { handleSubmit, register, formState: { errors } } = useForm<BillboardFormValues>({
+    const { handleSubmit, register, formState: { errors }, setValue } = useForm<BillboardFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
             label: '',
@@ -53,46 +46,58 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
         }
     });
 
+    const handleAddImage = (url: string) => {
+        setImages([url]);
+        setValue("imageUrl", url);
+    };
+
+    const handleRemoveImage = () => {
+        setImages([]);
+        setValue("imageUrl", '');
+    };
+
     const onSubmit: SubmitHandler<BillboardFormValues> = async (data) => {
         try {
-            console.log(data);
             setLoading(true);
-            await axios.patch (`/api/stores/${params.storeId}`, data);
+            if (initialData){
+                await axios.patch(`/api/${params.storeId}/billboards/${params.BillboardId}`, data);
+            } else {
+                await axios.post(`/api/${params.storeId}/billboards`, data);
+            }
+           
             router.refresh();
-           toast.success("Boutique mise à jour")
-        }catch (error) {
-            toast.error ("quelque chose s'est mal passé.");
+            router.push(`/${params.storeId}/billboards`)
+            toast.success(toastMessage);
+        } catch (error) {
+            toast.error("Quelque chose s'est mal passé.");
         } finally {
             setLoading(false);
         }
-        // Handle form submission
-       
     };
 
     const onDelete = async () => {
-        try{
-            setLoading(true)
-            await axios.delete(`/api/stores/${params.storeId}`)
+        try {
+            setLoading(true);
+            await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`);
             router.refresh();
-            router.push("/")
-            toast.success("Boutique supprimer.")
-        }catch (error) {
-            toast.error("Assurez-vous d'abord d'avoir supprimé tous les produits et catégories.")
-        }finally  {
-            setLoading (false)
-            setOpen(false )
+            router.push("/");
+            toast.success("Expositon supprimée.");
+        } catch (error) {
+            toast.error("Assurez-vous d'abord d'avoir supprimé toutes les catégories utilisant ces panneaux d'affichage..");
+        } finally {
+            setLoading(false);
+            setOpen(false);
         }
-    }
+    };
 
     return (
         <>
-        <AlertModal
-            isOpen= {open}
-            onClose={() => setOpen(false)}
-            onConfirm={onDelete}
-            loading= {loading}
-        />
-
+            <AlertModal
+                isOpen={open}
+                onClose={() => setOpen(false)}
+                onConfirm={onDelete}
+                loading={loading}
+            />
 
             <div className="flex items-center justify-between">
                 <Heading
@@ -101,63 +106,48 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
                 />
                 {initialData && (
                     <Button
-                    disabled={loading}
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => setOpen(true)}
+                        disabled={loading}
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => setOpen(true)}
                     >
-                    <Trash className="h-4 w-4"/>
+                        <Trash className="h-4 w-4" />
                     </Button>
                 )}
-               
             </div>
-            <Separator/>
-          
+            <Separator />
+
             <form onSubmit={handleSubmit(onSubmit)}>
-                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Image de fond</label>
-                <input
-                    id="name"
-                    {...register("label")}
-                    placeholder="Etiquette d'affichage"
-                    type="text"
-                    className="mt-1 p-2 border border-gray-300 rounded-md "
-                       
+                <label htmlFor="imageUpload" className="block text-sm font-medium text-gray-700">Image de fond</label>
+                <ImageUpload
+                    value={images}
+                    disabled={loading}
+                    onChange={handleAddImage}
+                    onRemove={handleRemoveImage}
                 />
+                {errors.imageUrl && <span className="text-red-500">{errors.imageUrl.message}</span>}
 
-                
-               
-               
-                <div className='grid grid-cols-1 gap-8'>
-                    {/* Ajoutez d'autres champs de formulaire ici si nécessaire */}
-                   
+                <div className="mb-4"> {/* Ajoutez une marge en bas */}
+                    <label htmlFor="label" className="block mt-4 text-sm font-medium text-gray-700">Étiquette</label>
+                    <div className="relative">
+                        <input
+                            id="label"
+                            {...register("label")}
+                            placeholder="Étiquette d'affichage"
+                            type="text"
+                            className="mt-1 p-2 border border-gray-300 rounded-md"
+                        />
+                        {errors.label && ( // Affichez le message d'erreur en bas
+                            <span className="text-red-500 absolute bottom-0 left-0">{errors.label.message}</span>
+                        )}
+                    </div>
                 </div>
 
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Etiquette</label>
-                <input
-                    id="name"
-                    {...register("label")}
-                    placeholder="Etiquette d'affichage"
-                    type="text"
-                    className="mt-1 p-2 border border-gray-300 rounded-md "
-                       
-                />
-                <div className="flex flex-col">
-                {errors.label && <span className="text-red-500 justify-center">{errors.label.message}</span>}
-                </div>
-               
-               
-                <div className='grid grid-cols-1 gap-8'>
-                    {/* Ajoutez d'autres champs de formulaire ici si nécessaire */}
-                   
-                </div>
-                <Button disabled={loading} className=" m-6 ml-auto" type="submit" >
+                <Button disabled={loading} className="mt-2 mb-2 rounded-full" type="submit">
                     {action}
                 </Button>
-            </form>
 
-           <Separator/>
-           
-          
+            </form>
         </>
     );
 };

@@ -22,6 +22,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     value
 }) =>{
     const [isMounted, setIsMounted] = useState(false);
+    
 
     useEffect (() => {
         setIsMounted (true);
@@ -68,6 +69,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                             onClick={onClick}
                         >
                             <ImagePlus className="h-4 w-4 mr-2"/>
+                            Télécharger une image
                         </Button>
                     )
                 }}
