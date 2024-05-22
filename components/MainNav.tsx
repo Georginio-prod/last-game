@@ -20,7 +20,7 @@ export function MainNav ({
         },
         {
             href : `/${params.storeId}/billboards`,
-            label: 'Page d\'exposition',
+            label: 'Exposition',
             active: pathname === `/${params.storeId}/billboard`
         },
         {
@@ -37,6 +37,11 @@ export function MainNav ({
             href : `/${params.storeId}/colors`,
             label: 'Couleurs',
             active: pathname === `/${params.storeId}/colors`
+        },
+        {
+            href : `/${params.storeId}/products`,
+            label: 'Produits',
+            active: pathname === `/${params.storeId}/products`
         },
         {
             href : `/${params.storeId}/settings`,

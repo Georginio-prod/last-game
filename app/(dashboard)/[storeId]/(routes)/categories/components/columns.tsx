@@ -13,18 +13,24 @@ export type CategoryColumn = {
 }
 
 export const columns: ColumnDef<CategoryColumn>[] = [
+ 
   {
     accessorKey: "name",
-    header: "name",
+    header: "Nom",
   },
   {
-    accessorKey: "createdAt",
-    header: "Exposition",
-    cell: ({ row }) => row.original.billboardLabel,
-  }, {
+    id: "createdAt",
     accessorKey: "createdAt",
     header: "Date",
+    cell: ({ row }) => {
+      return (
+        <div key={row.original.id}> 
+          {row.original.createdAt}
+        </div>
+      )
+    }
   },
+   
   {
     id : "actions",
     cell:({row}) => <CellAction data = {row.original} />
