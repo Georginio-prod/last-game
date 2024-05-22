@@ -23,8 +23,8 @@ export const SizesClient: React.FC<SizesClientProps> = ({
         <>
             <div className="flex items-center justify-between">
                 <Heading
-                    title={`Sizes (${data.length})`}
-                    description="Gérer la tailles de votre Boutique"
+                    title={`Tailles (${data.length})`}
+                    description="Administrez les tailles et pointures de votre boutique"
                 />
                 <Button onClick={() => router.push(`/${params.storeId}/sizes/new`)}>
                     <Plus className="mr-2 h-4 w-4"/>
