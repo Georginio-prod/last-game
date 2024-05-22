@@ -136,6 +136,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
                             placeholder="Étiquette d'affichage"
                             type="text"
                             className="mt-1 p-2 border border-gray-300 rounded-md"
+                            disabled= {loading}
                         />
                         {errors.label && ( // Affichez le message d'erreur en bas
                             <span className="text-red-500 absolute bottom-0 left-0">{errors.label.message}</span>
