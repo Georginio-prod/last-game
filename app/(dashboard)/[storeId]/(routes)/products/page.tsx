@@ -1,4 +1,5 @@
 import { format} from "date-fns";
+import { fr}  from 'date-fns/locale';
 
 import React from "react";
 import { ProductClient } from "./components/client";
@@ -30,13 +31,13 @@ const ProductsPage = async({
     const formattedProducts: ProductColumn [] = products.map((item) => ({
         id: item.id,
         name: item.name,
-        isFeatured: item.isFeature,
+        isFeatured: item.isFeatured,
         isArchived: item.isArchived,
         price: formatter.format(item.price.toNumber()),
         category: item.category.name,
-        size: item.color.value,
+        size: item.size.value,
         color: item.color.value,
-        createdAt: format (item.createdAt, "MMM do, yyyy")
+        createdAt: format(new Date(item.createdAt), "MMM do, yyyy", { locale: fr })
     }))
    
     return (

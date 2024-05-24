@@ -1,5 +1,5 @@
-import { format} from "date-fns";
-
+import { format,} from "date-fns";
+import { fr} from "date-fns/locale";
 import React from "react";
 import { ColorsClient } from "./components/client";
 import prismadb from "@/lib/prismadb";
@@ -25,7 +25,7 @@ const COlorsPage = async({
         id: item.id,
         name: item.name,
         value: item.value,
-        createdAt: format (item.createdAt, "MMM do, yyyy")
+        createdAt: format(new Date(item.createdAt), "MMM do, yyyy", { locale: fr })
     }))
    
     return (
