@@ -60,13 +60,13 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
         try {
             setLoading(true);
             if (initialData){
-                await axios.patch(`/api/${params.storeId}/billboards/${params.BillboardId}`, data);
+                await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
             } else {
                 await axios.post(`/api/${params.storeId}/billboards`, data);
             }
            
             router.refresh();
-            router.push(`/${params.storeId}/billboards`)
+            router.push(`/${params.storeId}/billboards`);
             toast.success(toastMessage);
         } catch (error) {
             toast.error("Quelque chose s'est mal passé.");
@@ -81,9 +81,9 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => 
             await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`);
             router.refresh();
             router.push(`/${params.storeId}/billboards`);
-            toast.success("Expositon supprimée.");
+            toast.success("Exposition supprimée.");
         } catch (error) {
-            toast.error("Assurez-vous d'abord d'avoir supprimé toutes les catégories utilisant ces panneaux d'affichage..");
+            toast.error("Assurez-vous d'abord d'avoir supprimé toutes les catégories utilisant ces panneaux d'affichage.");
         } finally {
             setLoading(false);
             setOpen(false);

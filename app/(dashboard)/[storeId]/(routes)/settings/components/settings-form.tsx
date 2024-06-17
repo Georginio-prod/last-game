@@ -102,7 +102,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
             <Separator/>
           
             <form onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nom de la boutique</label>
                 <input
                     id="name"
                     {...register("name")}
@@ -121,7 +121,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                    
                 </div>
                 <Button disabled={loading} className=" m-6 ml-auto" type="submit" >
-                    Save
+                    Enrégistré
                 </Button>
             </form>
 

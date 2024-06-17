@@ -28,7 +28,7 @@ export async function PATCH (
         const store = await prismadb.store.updateMany({
             where: {
                 id: params.storeId,
-                userId
+                userId: userId,
             },
                 data: {
                     name
@@ -38,7 +38,7 @@ export async function PATCH (
         return NextResponse.json(store);
 
     } catch (error){
-        console.log('[STORES_PATCH]', error);
+        console.log('[STORE_PATCH]', error);
         return new NextResponse("Interal error", {status: 500});
     }
 }
@@ -61,14 +61,14 @@ export async function DELETE (
         const store = await prismadb.store.deleteMany({
             where: {
                 id: params.storeId,
-                userId
+                userId:userId,
             } 
         })
 
         return NextResponse.json(store);
 
     } catch (error){
-        console.log('[STORES_DELETE]', error);
+        console.log('[STORE_DELETE]', error);
         return new NextResponse("Interal error", {status: 500});
     }
 }
