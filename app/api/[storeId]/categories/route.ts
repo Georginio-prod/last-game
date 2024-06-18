@@ -75,7 +75,6 @@ export async function GET (
                 storeId: params.storeId,
             }
         });
-        console.log("Categories", categorries);
         
         return NextResponse.json(categorries);
 
