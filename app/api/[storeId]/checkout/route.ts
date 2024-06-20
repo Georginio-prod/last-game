@@ -13,14 +13,17 @@ export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
-export async function POST(req: Request, { params }: { params: { storeId: string } }) {
+export async function POST(
+  req: Request,
+  { params }: { params: { storeId: string } }) {
+
   try {
     const { productIds } = await req.json();
 
     console.log('productIds:', productIds);
 
     if (!productIds || productIds.length === 0) {
-      return new NextResponse("Les produits sont requises", { status: 400 });
+      return new NextResponse("Les produits sont requis", { status: 400 });
     }
 
     const products = await prismadb.product.findMany({
@@ -33,25 +36,25 @@ export async function POST(req: Request, { params }: { params: { storeId: string
 
     console.log('products:', products);
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+    if (products.length === 0) {
+      return new NextResponse("Aucun produit trouvé", { status: 404 });
+    }
 
-    products.forEach((product) => {
-      line_items.push({
-        quantity: 1,
-        price_data: {
-          currency: 'CFA',
-          product_data: {
-            name: product.name,
-          },
-          unit_amount: product.price.toNumber() * 100, // Assurez-vous que le prix est en centimes
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = products.map((product) => ({
+      quantity: 1,
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: product.name,
         },
-      });
-    });
+        unit_amount: product.price.toNumber() * 100,  
+      },
+    }));
 
     const order = await prismadb.order.create({
       data: {
         storeId: params.storeId,
-        isPaid: false,
+        isPaid: false, 
         orderItems: {
           create: productIds.map((productId: string) => ({
             product: {
