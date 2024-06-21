@@ -33,7 +33,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
     const [loading, setLoading] = useState(false);
     
 
-    const title = initialData ? "Modifier la taille" : "Créer";
+    const title = initialData ? "Modifier le Types" : "Créer";
     const description = initialData ? "Modifier l'affichage" : "Ajouter un nouvel affichage";
     const toastMessage = initialData ? "Mise à jour réussie" : "Création réussie";
     const action = initialData ? "Enregistrer" : "Créer";
@@ -73,9 +73,9 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
             await axios.delete(`/api/${params.storeId}/sizes/${params.sizeId}`);
             router.refresh();
             router.push(`/${params.storeId}/sizes`);
-            toast.success("Taille supprimée.");
+            toast.success("Types supprimée.");
         } catch (error) {
-            toast.error("Assurez-vous d'abord d'avoir supprimé toutes les produits utilisant les tailles");
+            toast.error("Assurez-vous d'abord d'avoir supprimé toutes les produits utilisant les Typess");
         } finally {
             setLoading(false);
             setOpen(false);
@@ -118,7 +118,7 @@ export const SizeForm: React.FC<SizeFormProps> = ({ initialData }) => {
                             <input
                                 id="name"
                                 {...register("name")}
-                                placeholder="Taille ...."
+                                placeholder="Types ...."
                                 type="text"
                                 className="mt-1 p-2 border border-gray-300 rounded-md"
                                 disabled={loading}

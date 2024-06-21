@@ -30,7 +30,7 @@ export function MainNav ({
         },
         {
             href : `/${params.storeId}/sizes`,
-            label: 'Tailles',
+            label: 'Types',
             active: pathname === `/${params.storeId}/sizes`
         },
         {
@@ -45,7 +45,7 @@ export function MainNav ({
         },
         {
             href : `/${params.storeId}/orders`,
-            label: 'Autres',
+            label: 'Récap',
             active: pathname === `/${params.storeId}/orders`
         },
         {
